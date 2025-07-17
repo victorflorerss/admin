@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 const LibroCrear = () => {
@@ -11,20 +11,20 @@ const LibroCrear = () => {
   const [isbn, setIsbn] = useState("");
   const [urlLibro, setUrlLibro] = useState("");
   const [categorias, setCategorias] = useState([]);
+  const [autores, setAutores] = useState([]);
   const [libros, setLibros] = useState([]);
 
   useEffect(() => {
-    const cargarCategorias = () => {
-      axios.get("http://localhost:3000/categorias")
-        .then(res => setCategorias(res.data))
-        .catch(() => setCategorias([]));
-    };
-    cargarCategorias();
-    window.addEventListener("focus", cargarCategorias);
-    return () => window.removeEventListener("focus", cargarCategorias);
-  }, []);
+    axios
+      .get("http://35.94.124.77:3000/categorias/listar")
+      .then((res) => setCategorias(res.data.categorias))
+      .catch(() => setCategorias([]));
 
-  const inputStyle = {width:'100%',padding:'8px',marginBottom:'12px',borderRadius:'4px',border:'1px solid #B0B0B0',fontSize:'15px',background:'#F4F6F8'};
+    axios
+      .get("http://35.94.124.77:3000/autor/listar")
+      .then((res) => setAutores(res.data.autores))
+      .catch(() => setAutores([]));
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -33,13 +33,16 @@ const LibroCrear = () => {
       nombre,
       autor,
       descripcion,
-      categoria: categorias.find(cat => cat.id === Number(categoria))?.nombre || "",
+      categoria:
+        categorias.find((cat) => cat.id === Number(categoria))?.nombrecat || "",
       precio,
       isbn,
-      urlLibro
+      urlLibro,
     };
-    axios.post("http://localhost:3000/libros", nuevoLibro)
-      .then(res => {
+
+    axios
+      .post("http://35.94.124.77:3000/libro/crear", nuevoLibro)
+      .then((res) => {
         setLibros([...libros, res.data]);
         setImagenUrl("");
         setNombre("");
@@ -53,24 +56,158 @@ const LibroCrear = () => {
   };
 
   return (
-    <form className="libro-form" style={{maxWidth:'400px',margin:'0 auto',background:'#fff',padding:'24px',borderRadius:'8px',boxShadow:'0 2px 8px rgba(0,0,0,0.05)'}} onSubmit={handleSubmit}>
-      <input type="text" placeholder="URL de la imagen" value={imagenUrl} onChange={e=>setImagenUrl(e.target.value)} style={inputStyle} />
-      <div style={{width:'100%',height:'120px',background:'#F4F6F8',borderRadius:'6px',display:'flex',alignItems:'center',justifyContent:'center',color:'#555',marginBottom:'16px',fontWeight:'500',fontSize:'18px'}}>
-        {imagenUrl ? <img src={imagenUrl} alt="Vista previa" style={{maxHeight:'100%',maxWidth:'100%',objectFit:'contain'}} /> : 'Vista previa'}
+    <form
+      onSubmit={handleSubmit}
+      className="max-w-xl mx-auto bg-white p-8 rounded-2xl shadow-2xl border border-gray-100 space-y-5"
+    >
+      <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
+        Registrar Nuevo Libro
+      </h2>
+
+      {/* URL Imagen */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-1">
+          URL de la imagen
+        </label>
+        <input
+          type="text"
+          value={imagenUrl}
+          onChange={(e) => setImagenUrl(e.target.value)}
+          placeholder="https://example.com/portada.jpg"
+          className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
+        />
       </div>
-      <input type="text" placeholder="Nombre de libro" value={nombre} onChange={e=>setNombre(e.target.value)} style={inputStyle} />
-      <input type="text" placeholder="Autor" value={autor} onChange={e=>setAutor(e.target.value)} style={inputStyle} />
-      <input type="text" placeholder="ISBN" value={isbn} onChange={e=>setIsbn(e.target.value)} style={inputStyle} />
-      <input type="text" placeholder="URL libro (PDF)" value={urlLibro} onChange={e=>setUrlLibro(e.target.value)} style={inputStyle} />
-      <textarea placeholder="Descripción del libro" value={descripcion} onChange={e=>setDescripcion(e.target.value)} rows={3} style={{...inputStyle,resize:'none',color:'#111'}} />
-      <select value={categoria} onChange={e=>setCategoria(e.target.value)} style={inputStyle}>
-        <option value="">Categoría</option>
-        {categorias.map(cat => (
-          <option key={cat.id} value={cat.id}>{cat.nombre}</option>
-        ))}
-      </select>
-      <input type="number" placeholder="Precio (S/)" value={precio} onChange={e=>setPrecio(e.target.value)} style={inputStyle} />
-      <button type="submit" style={{width:'100%',background:'#1746A2',color:'#fff',border:'none',borderRadius:'4px',padding:'10px 0',fontWeight:'bold',fontSize:'16px',letterSpacing:'1px'}}>GUARDAR</button>
+
+      {/* Vista previa */}
+      <div className="w-full h-48 bg-gray-100 flex items-center justify-center rounded-xl border border-dashed border-gray-300 overflow-hidden">
+        {imagenUrl ? (
+          <img
+            src={imagenUrl}
+            alt="Vista previa"
+            className="h-full object-contain"
+          />
+        ) : (
+          <span className="text-gray-400">Vista previa de la imagen</span>
+        )}
+      </div>
+
+      {/* Nombre del libro */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-1">
+          Nombre del libro
+        </label>
+        <input
+          type="text"
+          value={nombre}
+          onChange={(e) => setNombre(e.target.value)}
+          placeholder="Título del libro"
+          className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
+        />
+      </div>
+
+      {/* Autor - datalist */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-1">
+          Autor
+        </label>
+        <input
+          list="autores"
+          value={autor}
+          onChange={(e) => setAutor(e.target.value)}
+          placeholder="Selecciona o escribe un autor"
+          className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
+        />
+        <datalist id="autores">
+          {autores.map((a) => (
+            <option key={a.id} value={a.nombre} />
+          ))}
+        </datalist>
+      </div>
+
+      {/* ISBN */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-1">
+          ISBN
+        </label>
+        <input
+          type="text"
+          value={isbn}
+          onChange={(e) => setIsbn(e.target.value)}
+          placeholder="978-xxxx-xxxx"
+          className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
+        />
+      </div>
+
+      {/* URL PDF */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-1">
+          URL del libro (PDF)
+        </label>
+        <input
+          type="text"
+          value={urlLibro}
+          onChange={(e) => setUrlLibro(e.target.value)}
+          placeholder="https://example.com/archivo.pdf"
+          className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
+        />
+      </div>
+
+      {/* Descripción */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-1">
+          Descripción
+        </label>
+        <textarea
+          rows={3}
+          value={descripcion}
+          onChange={(e) => setDescripcion(e.target.value)}
+          placeholder="Descripción breve del libro"
+          className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm resize-none transition"
+        />
+      </div>
+
+      {/* Categoría */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-1">
+          Categoría
+        </label>
+        <select
+          value={categoria}
+          onChange={(e) => setCategoria(e.target.value)}
+          className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
+        >
+          <option value="">Selecciona una categoría</option>
+          {categorias.map((cat) => (
+            <option key={cat.id} value={cat.id}>
+              {cat.nombrecat}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Precio */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-1">
+          Precio (S/)
+        </label>
+        <input
+          type="number"
+          value={precio}
+          onChange={(e) => setPrecio(e.target.value)}
+          placeholder="19.90"
+          min="0"
+          step="0.01"
+          className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
+        />
+      </div>
+
+      {/* Botón */}
+      <button
+        type="submit"
+        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold text-lg transition duration-300 shadow-md"
+      >
+        Guardar Libro
+      </button>
     </form>
   );
 };
