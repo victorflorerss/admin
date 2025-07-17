@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import AutorCrear from './components/AutorCrear';
-import AutorEditar from './components/AutorEditar';
-import AutorListar from './components/AutorListar';
-import CategoriaCrear from './components/CategoriaCrear';
-import CategoriaEditar from './components/CategoriaEditar';
-import CategoriaListar from './components/CategoriaListar';
-import LibroCrear from './components/LibroCrear';
-import LibroEditar from './components/LibroEditar';
-import LibroEliminar from './components/LibroEliminar';
-import LibroListar from './components/LibroListar';
+import AutorCrear from './components/autor/AutorCrear';
+import AutorEditar from './components/autor/AutorEditar';
+import AutorListar from './components/autor/AutorListar';
+import CategoriaCrear from './components/categoria/CategoriaCrear';
+import CategoriaEditar from './components/categoria/CategoriaEditar';
+import CategoriaListar from './components/categoria/CategoriaListar';
+import LibroCrear from './components/libro/LibroCrear';
+import LibroEditar from './components/libro/LibroEditar';
+import LibroEliminar from './components/libro/LibroEliminar';
+import LibroListar from './components/libro/LibroListar';
 import './App.css';
 
 function App() {
