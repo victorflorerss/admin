@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 const LibroEliminar = () => {
   const [libros, setLibros] = useState([]);
@@ -9,10 +10,18 @@ const LibroEliminar = () => {
   const [eliminado, setEliminado] = useState(false);
 
   useEffect(() => {
-    const storedCategorias = localStorage.getItem("categorias");
-    setCategorias(storedCategorias ? JSON.parse(storedCategorias) : []);
-    const stored = localStorage.getItem("libros");
-    setLibros(stored ? JSON.parse(stored) : []);
+    const cargarDatos = async () => {
+      try {
+        const resLibros = await axios.get("http://localhost:3000/libro/listar");
+        setLibros(resLibros.data.libros);
+        const resCategorias = await axios.get("http://localhost:3000/categorias/listar");
+        setCategorias(resCategorias.data.categorias);
+      } catch (error) {
+        setLibros([]);
+        setCategorias([]);
+      }
+    };
+    cargarDatos();
   }, []);
 
   const librosFiltrados = filtroCategoria
@@ -32,13 +41,21 @@ const LibroEliminar = () => {
   };
 
   const eliminarLibro = () => {
-    const actualizados = [...libros];
-    actualizados.splice(libroSeleccionado, 1);
-    setLibros(actualizados);
-    localStorage.setItem("libros", JSON.stringify(actualizados));
-    setConfirmar(false);
-    setEliminado(true);
-    setLibroSeleccionado(null);
+    const libro = libros[libroSeleccionado];
+    axios.delete(`http://localhost:3000/libro/${libro.id}`)
+      .then(() => {
+        const actualizados = [...libros];
+        actualizados.splice(libroSeleccionado, 1);
+        setLibros(actualizados);
+        setConfirmar(false);
+        setEliminado(true);
+        setLibroSeleccionado(null);
+      })
+      .catch(() => {
+        setConfirmar(false);
+        setEliminado(true);
+        setLibroSeleccionado(null);
+      });
   };
 
   const cerrarMensaje = () => setEliminado(false);

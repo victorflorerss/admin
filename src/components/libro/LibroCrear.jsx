@@ -1,17 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const LibroCrear = () => {
   const [imagenUrl, setImagenUrl] = useState("");
   const [nombre, setNombre] = useState("");
-  const [autor, setAutor] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [categoria, setCategoria] = useState("");
   const [precio, setPrecio] = useState("");
+  const [autor, setAutor] = useState("");
   const [isbn, setIsbn] = useState("");
   const [urlLibro, setUrlLibro] = useState("");
   const [categorias, setCategorias] = useState([]);
-  const [autores, setAutores] = useState([]);
   const [libros, setLibros] = useState([]);
 
   useEffect(() => {
@@ -19,11 +18,6 @@ const LibroCrear = () => {
       .get("http://35.94.124.77:3000/categorias/listar")
       .then((res) => setCategorias(res.data.categorias))
       .catch(() => setCategorias([]));
-
-    axios
-      .get("http://35.94.124.77:3000/autor/listar")
-      .then((res) => setAutores(res.data.autores))
-      .catch(() => setAutores([]));
   }, []);
 
   const handleSubmit = (e) => {
@@ -31,11 +25,11 @@ const LibroCrear = () => {
     const nuevoLibro = {
       imagenUrl,
       nombre,
-      autor,
       descripcion,
       categoria:
         categorias.find((cat) => cat.id === Number(categoria))?.nombrecat || "",
       precio,
+      autor,
       isbn,
       urlLibro,
     };
@@ -46,10 +40,10 @@ const LibroCrear = () => {
         setLibros([...libros, res.data]);
         setImagenUrl("");
         setNombre("");
-        setAutor("");
         setDescripcion("");
         setCategoria("");
         setPrecio("");
+        setAutor("");
         setIsbn("");
         setUrlLibro("");
       });
@@ -64,149 +58,134 @@ const LibroCrear = () => {
         Registrar Nuevo Libro
       </h2>
 
-      {/* URL Imagen */}
+      {/* Campo URL de imagen */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-1">
-          URL de la imagen
-        </label>
         <input
           type="text"
           value={imagenUrl}
           onChange={(e) => setImagenUrl(e.target.value)}
-          placeholder="https://example.com/portada.jpg"
-          className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
+          placeholder="URL de la imagen"
+          className="w-full px-4 py-3 rounded-lg border border-black bg-white text-black focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
         />
       </div>
 
-      {/* Vista previa */}
-      <div className="w-full h-48 bg-gray-100 flex items-center justify-center rounded-xl border border-dashed border-gray-300 overflow-hidden">
+      {/* Vista previa de imagen (ajustada) */}
+        <div className="w-full h-48 bg-white flex items-center justify-center rounded-xl border border-dashed border-gray-300 overflow-hidden mb-4">
         {imagenUrl ? (
-          <img
-            src={imagenUrl}
-            alt="Vista previa"
-            className="h-full object-contain"
-          />
-        ) : (
-          <span className="text-gray-400">Vista previa de la imagen</span>
-        )}
+        <img
+          src={imagenUrl}
+          alt="Vista previa"
+          className="object-contain"
+          style={{
+          maxHeight: "160px",
+          maxWidth: "100%",
+          height: "auto",
+          width: "auto",
+        }}
+        />
+      ) : null}
       </div>
+
 
       {/* Nombre del libro */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-1">
-          Nombre del libro
-        </label>
         <input
           type="text"
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
-          placeholder="Título del libro"
-          className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
+          placeholder="Nombre de libro"
+          className="w-full px-4 py-3 rounded-lg border border-black bg-white text-black focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
         />
       </div>
 
-      {/* Autor - datalist */}
+      {/* Descripción con fondo blanco puro y bordes negros */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-1">
-          Autor
-        </label>
+        <textarea
+          value={descripcion}
+          onChange={(e) => setDescripcion(e.target.value)}
+          placeholder="Descripción"
+          rows={2}
+          className="w-full px-4 py-3 rounded-lg border border-black bg-white text-black focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm resize-none transition"
+          style={{ backgroundColor: '#fff', color: '#000', borderColor: '#000' }}
+        />
+
+
+
+
+
+
+      </div>
+
+      {/* Autor */}
+      <div>
         <input
-          list="autores"
+          type="text"
           value={autor}
           onChange={(e) => setAutor(e.target.value)}
-          placeholder="Selecciona o escribe un autor"
-          className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
+          placeholder="Autor"
+          className="w-full px-4 py-3 rounded-lg border border-black bg-white text-black focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
         />
-        <datalist id="autores">
-          {autores.map((a) => (
-            <option key={a.id} value={a.nombre} />
-          ))}
-        </datalist>
       </div>
 
       {/* ISBN */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-1">
-          ISBN
-        </label>
         <input
           type="text"
           value={isbn}
           onChange={(e) => setIsbn(e.target.value)}
-          placeholder="978-xxxx-xxxx"
-          className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
+          placeholder="ISBN"
+          className="w-full px-4 py-3 rounded-lg border border-black bg-white text-black focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
         />
       </div>
 
-      {/* URL PDF */}
+      {/* URL libro (PDF) */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-1">
-          URL del libro (PDF)
-        </label>
         <input
           type="text"
           value={urlLibro}
           onChange={(e) => setUrlLibro(e.target.value)}
-          placeholder="https://example.com/archivo.pdf"
-          className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
+          placeholder="URL libro (PDF)"
+          className="w-full px-4 py-3 rounded-lg border border-black bg-white text-black focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
         />
       </div>
 
-      {/* Descripción */}
-      <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-1">
-          Descripción
-        </label>
-        <textarea
-          rows={3}
-          value={descripcion}
-          onChange={(e) => setDescripcion(e.target.value)}
-          placeholder="Descripción breve del libro"
-          className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm resize-none transition"
-        />
+      {/* Categoría y Precio */}
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <select
+            value={categoria}
+            onChange={(e) => setCategoria(e.target.value)}
+            className="w-full px-4 py-3 rounded-lg border border-black bg-white text-black focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
+          >
+            <option value="">Categoría</option>
+            {categorias.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.nombrecat}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <input
+            type="number"
+            value={precio}
+            onChange={(e) => setPrecio(e.target.value)}
+            placeholder="Precio (S/)"
+            min="0"
+            step="0.01"
+            className="w-full px-4 py-3 rounded-lg border border-black bg-white text-black focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
+          />
+        </div>
       </div>
 
-      {/* Categoría */}
-      <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-1">
-          Categoría
-        </label>
-        <select
-          value={categoria}
-          onChange={(e) => setCategoria(e.target.value)}
-          className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
-        >
-          <option value="">Selecciona una categoría</option>
-          {categorias.map((cat) => (
-            <option key={cat.id} value={cat.id}>
-              {cat.nombrecat}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Precio */}
-      <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-1">
-          Precio (S/)
-        </label>
-        <input
-          type="number"
-          value={precio}
-          onChange={(e) => setPrecio(e.target.value)}
-          placeholder="19.90"
-          min="0"
-          step="0.01"
-          className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
-        />
-      </div>
-
-      {/* Botón */}
+      {/* Botón GUARDAR con color exacto #1e3a8a */}
       <button
         type="submit"
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold text-lg transition duration-300 shadow-md"
+        className="w-full text-white font-bold py-3 px-4 rounded-lg hover:bg-[#1e40af] focus:outline-none focus:ring-2 focus:ring-blue-700 focus:ring-opacity-50 transition shadow-lg"
+        style={{ backgroundColor: "#1e3a8a" }}
       >
-        Guardar Libro
+        GUARDAR
       </button>
     </form>
   );

@@ -15,7 +15,7 @@ const AutorEditar = () => {
 
   useEffect(() => {
     axios
-      .get("http://35.94.124.77:3000/autor/listar")
+      .get("http://localhost:3000/autor/listar")
       .then((res) => setAutores(res.data))
       .catch(() => setAutores([]));
   }, []);
@@ -44,7 +44,7 @@ const AutorEditar = () => {
       return;
     }
     axios
-      .put(`http://35.94.124.77:3000/autores/${autores[editando]?.id}`, form)
+      .put(`http://localhost:3000/autores/${autores[editando]?.id}`, form)
       .then((res) => {
         const actualizados = [...autores];
         actualizados[editando] = res.data;
@@ -66,7 +66,7 @@ const AutorEditar = () => {
   const eliminarAutor = () => {
     axios
       .delete(
-        `http://35.94.124.77:3000/autores/${autores[confirmarEliminar]?.id}`
+        `http://localhost:3000/autores/${autores[confirmarEliminar]?.id}`
       )
       .then(() => {
         const actualizados = [...autores];

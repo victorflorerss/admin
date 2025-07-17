@@ -20,25 +20,26 @@ const AutorListar = () => {
       {autores.length === 0 ? (
         <p className="text-center text-gray-600">No hay autores registrados.</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {autores.map((autor) => (
-            <div
-              key={autor.id}
-              className="bg-white p-6 rounded-2xl shadow-md hover:shadow-lg transition duration-300 flex flex-col items-center max-w-xs mx-auto"
-            >
-              <div className="w-32 aspect-square rounded-full overflow-hidden mb-4 border-4 border-blue-400 shadow-sm">
-                <img
-                  src={autor.url_foto}
-                  alt={autor.nombre}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <p className="text-lg font-semibold text-gray-800 text-center">
-                {autor.nombre}
-              </p>
+            <div className="flex flex-col gap-6">
+              {autores.map((autor) => (
+                <div
+                  key={autor.id}
+                  className="bg-white p-4 rounded-xl shadow-md hover:shadow-lg transition duration-300 flex items-center max-w-lg mx-auto"
+                >
+                  <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-blue-400 shadow-sm flex-shrink-0 flex items-center justify-center">
+                    <img
+                      src={autor.url_foto}
+                      alt={autor.nombre}
+                      className="object-cover"
+                      style={{ width: '80px', height: '80px', borderRadius: '50%' }}
+                    />
+                  </div>
+                  <div className="ml-6 flex items-center h-20">
+                    <p className="text-lg font-semibold text-gray-800">{autor.nombre}</p>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
       )}
     </div>
   );
